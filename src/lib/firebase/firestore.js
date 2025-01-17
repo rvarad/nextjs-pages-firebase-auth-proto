@@ -1,9 +1,19 @@
 import { fireStoreDB } from "./firebase-admin/adminAppConfig"
 
-async function checkIfOrgExists(orgId) {
-	const orgCollectionRef = fireStoreDB.collection("Organisations")
+const orgCollectionRef = fireStoreDB.collection("Organisations")
 
-	console.log(orgCollectionRef)
+async function checkIfOrgExists(orgId) {
+	const docSnap = (await orgCollectionRef.doc(orgId).get()).data()
+
+	return !!docSnap
 }
+
+// async function addUserToOrg(orgId, user) {
+//   const org = await checkIfOrgExists(orgId)
+
+//   if (org) {
+
+//   }
+// }
 
 export { checkIfOrgExists }

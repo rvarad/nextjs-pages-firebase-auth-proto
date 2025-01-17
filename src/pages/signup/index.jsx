@@ -33,9 +33,9 @@ function Signup() {
 			}),
 		})
 
-		const userCredentials = await response.json()
+		// const userCredentials = await response.json()
 
-		console.log(userCredentials)
+		// console.log(userCredentials)
 	}
 
 	return (
