@@ -29,7 +29,7 @@ async function getServerSideProps({ req }) {
 		try {
 			session = await getSession(req.cookies.session)
 
-			if (session.admin) {
+			if (session.role === "admin" || session.role === "sudo") {
 				return {
 					props: {
 						session,

@@ -1,4 +1,5 @@
 // import { handleSignUp } from "@/lib/firebase/auth"
+import { useRouter } from "next/router"
 import React from "react"
 import { Controller, useForm } from "react-hook-form"
 
@@ -11,6 +12,8 @@ function Signup() {
 			repeatPassword: "",
 		},
 	})
+
+	const router = useRouter()
 
 	async function submitValues(values) {
 		// this will signup the user as admin of an org
@@ -33,9 +36,17 @@ function Signup() {
 			}),
 		})
 
-		// const userCredentials = await response.json()
+		const userCredentials = await response.json()
 
 		// console.log(userCredentials)
+
+		if (response.status === 200) {
+			console.log("signed up: ", userCredentials)
+
+			router.push("/signin")
+		} else {
+			console.log("sign up unsuccessful")
+		}
 	}
 
 	return (
