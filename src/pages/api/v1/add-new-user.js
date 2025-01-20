@@ -28,7 +28,11 @@ async function handler(req, res) {
 		})
 
 		// add user to org
-		const employeeId = await addUserToOrg(verifiedSession.orgId, userRecord)
+		const employeeId = await addUserToOrg(
+			verifiedSession.orgId,
+			userRecord,
+			role
+		)
 
 		await firebaseAdminAuth.setCustomUserClaims(userRecord.uid, {
 			role: role,

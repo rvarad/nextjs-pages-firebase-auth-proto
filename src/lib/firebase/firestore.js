@@ -27,7 +27,7 @@ async function createOrg(orgId, sudoUser) {
 	return employeeId
 }
 
-async function addUserToOrg(orgId, user) {
+async function addUserToOrg(orgId, user, role) {
 	const docRef = fireStoreDB.collection(orgId).doc("users")
 
 	const employeeId = nanoid()
@@ -37,7 +37,7 @@ async function addUserToOrg(orgId, user) {
 			[user.uid]: {
 				email: user.email,
 				employeeId: employeeId,
-				role: "user",
+				role: role,
 			},
 		},
 		{ merge: true }
