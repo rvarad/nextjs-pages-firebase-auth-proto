@@ -46,6 +46,10 @@ function Profile({ user, session }) {
 	return (
 		<div>
 			<h1>Profile</h1>
+			<div>User: {JSON.stringify(user)}</div>
+			<hr />
+			<div>Session: {JSON.stringify(session)}</div>
+			<hr />
 			<button onClick={handleSignOut}>Sign Out</button>
 		</div>
 	)
@@ -80,8 +84,10 @@ export async function getServerSideProps({ req }) {
 		props: {
 			user: user
 				? {
-						admin: user?.customClaims?.admin,
+						role: user?.customClaims?.role,
 						email: user?.email,
+						employeeId: user?.customClaims?.employeeId,
+						orgId: user?.customClaims?.orgId,
 				  }
 				: null,
 			session: session ? session : null,
