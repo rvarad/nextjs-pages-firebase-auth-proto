@@ -46,6 +46,14 @@ async function addUserToOrg(orgId, user) {
 	return employeeId
 }
 
+async function getOrgUsers(orgId) {
+	const docSnap = await fireStoreDB.collection(orgId).doc("users").get()
+
+	// console.log("doc snap", docSnap.data())
+
+	return docSnap.data()
+}
+
 // async function addUserToOrg(orgId, user) {
 //   const org = await checkIfOrgExists(orgId)
 
@@ -56,4 +64,4 @@ async function addUserToOrg(orgId, user) {
 //   }
 // }
 
-export { checkIfOrgExists, createOrg, addUserToOrg }
+export { checkIfOrgExists, createOrg, addUserToOrg, getOrgUsers }
