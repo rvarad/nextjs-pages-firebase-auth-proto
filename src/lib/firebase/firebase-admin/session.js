@@ -11,7 +11,10 @@ async function getSession(sessionCookie) {
 		return verifiedSession
 		// }
 	} catch (error) {
-		throw new Error("Error verifying session")
+		// console.log("Error verifying session", error)
+		// return error
+		// if (error.code === "auth/session-cookie-expired")
+		throw new Error(error.code)
 	}
 }
 

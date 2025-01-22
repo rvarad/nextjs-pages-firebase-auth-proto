@@ -2,6 +2,7 @@
 import { firebaseClientAuth } from "@/lib/firebase/clientAppConfig"
 import { getSession } from "@/lib/firebase/firebase-admin/session"
 import { getCurrentUser } from "@/lib/firebase/firebase-admin/user"
+import { serialize } from "cookie"
 import { signOut } from "firebase/auth"
 import { useRouter } from "next/router"
 import React from "react"
@@ -57,40 +58,50 @@ function Profile({ user, session }) {
 
 export default Profile
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req, res }) {
 	let user
 	let session
-	if (req.cookies.session) {
-		try {
-			session = await getSession(req.cookies.session)
-			user = await getCurrentUser(req.cookies.session)
-		} catch (error) {
-			console.error("error in getting session", error)
-
-			return {
-				redirect: {
-					destination: "/signin?error=session",
-					permanent: false,
-				},
-			}
+	if (!req.cookies.session) {
+		return {
+			redirect: {
+				destination: "/signin?error=session",
+				permanent: false,
+			},
 		}
 	}
+	try {
+		session = await getSession(req.cookies.session)
+		user = await getCurrentUser(req.cookies.session)
+		return {
+			props: {
+				user: user
+					? {
+							role: user?.customClaims?.role,
+							email: user?.email,
+							employeeId: user?.customClaims?.employeeId,
+							orgId: user?.customClaims?.orgId,
+					  }
+					: null,
+				session: session ? session : null,
+			},
+		}
+	} catch (error) {
+		if (error.message === "auth/session-cookie-expired") {
+			res.setHeader(
+				"Set-Cookie",
+				serialize("session", "", { maxAge: -1, path: "/" })
+			)
+		}
 
-	// console.log("user", user)
-	// console.log("session", session)
-	// console.log("req.cookies.session", req.cookies.session)
-
-	return {
-		props: {
-			user: user
-				? {
-						role: user?.customClaims?.role,
-						email: user?.email,
-						employeeId: user?.customClaims?.employeeId,
-						orgId: user?.customClaims?.orgId,
-				  }
-				: null,
-			session: session ? session : null,
-		},
+		return {
+			redirect: {
+				destination: "/signin?error=session",
+				permanent: false,
+			},
+		}
 	}
 }
+
+// console.log("user", user)
+// console.log("session", session)
+// console.log("req.cookies.session", req.cookies.session)

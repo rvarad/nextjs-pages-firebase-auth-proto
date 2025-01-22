@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/firebase/firebase-admin/session"
 import { getOrgUsers } from "@/lib/firebase/firestore"
+import { serialize } from "cookie"
 import React from "react"
 
 function OrganisationDetails({ users, role }) {
@@ -33,7 +34,7 @@ function OrganisationDetails({ users, role }) {
 
 export default OrganisationDetails
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req, res }) {
 	if (!req.cookies.session) {
 		return {
 			redirect: {
@@ -53,6 +54,12 @@ export async function getServerSideProps({ req }) {
 			},
 		}
 	} catch (error) {
+		if (error.message === "auth/session-cookie-expired") {
+			res.setHeader(
+				"Set-Cookie",
+				serialize("session", "", { maxAge: -1, path: "/" })
+			)
+		}
 		return {
 			redirect: {
 				destination: "/signin?error=session",

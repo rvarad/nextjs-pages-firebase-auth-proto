@@ -43,7 +43,6 @@ function SignIn() {
 			}
 		} catch (error) {
 			console.log("Error signing in: ", error)
-			return false
 		}
 	}
 

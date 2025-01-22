@@ -1,6 +1,7 @@
 // import { getSession } from "@/lib/firebase/firebase-admin/session"
 
 import { getSession } from "@/lib/firebase/firebase-admin/session"
+import { serialize } from "cookie"
 import { Controller, useForm } from "react-hook-form"
 
 function AddNewUser({ session }) {
@@ -104,32 +105,44 @@ function AddNewUser({ session }) {
 
 export default AddNewUser
 
-async function getServerSideProps({ req }) {
+async function getServerSideProps({ req, res }) {
 	let session
 	// console.log(req.cookies.session)
 
-	if (req.cookies.session) {
-		try {
-			session = await getSession(req.cookies.session)
+	if (!req.cookies.session) {
+		return {
+			redirect: {
+				destination: "/signin?error=session",
+				permanent: false,
+			},
+		}
+	}
+	try {
+		session = await getSession(req.cookies.session)
 
-			if (session.role === "admin" || session.role === "sudo") {
-				return {
-					props: {
-						session,
-					},
-				}
-			} else {
-				return {
-					props: {},
-				}
-			}
-		} catch (error) {
+		if (session.role === "admin" || session.role === "sudo") {
 			return {
-				redirect: {
-					destination: "/signin?error=session",
-					permanent: false,
+				props: {
+					session,
 				},
 			}
+		} else {
+			return {
+				props: {},
+			}
+		}
+	} catch (error) {
+		if (error.message === "auth/session-cookie-expired") {
+			res.setHeader(
+				"Set-Cookie",
+				serialize("session", "", { maxAge: -1, path: "/" })
+			)
+		}
+		return {
+			redirect: {
+				destination: "/signin?error=session",
+				permanent: false,
+			},
 		}
 	}
 	// return {

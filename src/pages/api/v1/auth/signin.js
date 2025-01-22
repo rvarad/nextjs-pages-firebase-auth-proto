@@ -16,7 +16,8 @@ export default async function handler(req, res) {
 			const decodedToken = await firebaseAdminAuth.verifyIdToken(idToken)
 
 			if (decodedToken) {
-				const expiry = 5 * 24 * 60 * 60 * 1000
+				// const expiry = 5 * 24 * 60 * 60 * 1000
+				const expiry = 5 * 60 * 1000
 
 				const sessionCookie = await firebaseAdminAuth.createSessionCookie(
 					idToken,
